@@ -10,6 +10,7 @@ class C_event extends CI_Controller
 	{
 		parent::__construct();
 		$this->load->model('m_crud');
+		$this->load->model('m_event');
 	}
 
 	function index() {
@@ -101,12 +102,21 @@ class C_event extends CI_Controller
 		$length = intval($this->input->get("length"));
 		
 		
-		$query = $this->m_crud->get('event');
+		if ($this->session->userdata('iTypeUser') == 'Penyelenggara') {
+			$query = $this->m_crud->get('event');
+		}
+
+		if ($this->session->userdata('iTypeUser') == 'Volunteer') {
+			$query = $this->m_event->getDataEvent();
+		}
 		
 		$data = array();
 		
+		// print_r($this->db->last_query()); exit();
+
 		$no = 1;
 		foreach($query->result() as $r) {
+
 			// '
 
 		$btnView = "<a href='#' class='btn btn-primary btn-xs btn_view_event' data-toggle='modal' data-target='#myModal' onclick='showDetailEvent({$r->id})'><span class='glyphicon glyphicon-align-left' title='Detail'></span></a>";
@@ -122,7 +132,7 @@ class C_event extends CI_Controller
 		if ($this->session->userdata('iTypeUser') == 'Penyelenggara') {
 			$button = $btnView." ".$btnEdit." ".$btnDelete;
 		} else {
-			$button = $btnView." ".$btnFollow." ".$btnBatal;
+			$button = $btnView." ".$btnFollow;
 		}
 		
 		$data[] = array(

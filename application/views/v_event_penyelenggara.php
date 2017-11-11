@@ -7,6 +7,7 @@
 		<div class="col-md-12">
 			<h3>List Event</h3>
 			<hr>
+			<a href="<?= site_url('c_event/getDataEvent') ?>">Test</a>
 		</div>
 	</div>
 	<?php if ($this->session->userdata('iTypeUser') != 'Volunteer') { ?>
