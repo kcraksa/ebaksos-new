@@ -88,26 +88,31 @@
 	}
 
 	function btn_follow_event(id) {
-		var x = cek_sudah_ikut_belum(id);
-		var tanya = confirm('Anda Yakin Ingin Mengikuti Kegiatan Ini ?');
-		if (tanya == true) {
-			$.ajax({
-				url: '<?= site_url('c_event/ikutiKegiatan/') ?>',
-				type: 'POST',
-				data: { 'id' : id },
-				success: function(data) {
-					if (data == 1) {
-						window.location = '<?= site_url() ?>c_event/showInfoPembayaran/'+id;
+		var cek = cek_sudah_ikut_belum(id);
+		if (cek == 1) {
+			alert('Anda Sudah Mengikuti Kegiatan Ini');
+			return false;
+		} else {
+			var tanya = confirm('Anda Yakin Ingin Mengikuti Kegiatan Ini ?');
+			if (tanya == true) {
+				$.ajax({
+					url: '<?= site_url('c_event/ikutiKegiatan/') ?>',
+					type: 'POST',
+					data: { 'id' : id },
+					success: function(data) {
+						if (data == 1) {
+							window.location = '<?= site_url() ?>c_event/showInfoPembayaran/'+id;
+						}
 					}
-				}
-			})
+				})
+			}
 		}
 	}
 
 	function cek_sudah_ikut_belum(id) {
 		var user  = '<?php echo $this->session->userdata('id') ?>';
 		return $.ajax({
-			url: '<?php echo $site_url() ?>c_event/cek_sudah_ikut_event',
+			url: '<?php echo site_url() ?>/c_event/cek_sudah_ikut_event',
 			type: 'POST',
 			data: {
 				'iEventId' : id,

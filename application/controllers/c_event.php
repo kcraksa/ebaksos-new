@@ -276,8 +276,10 @@ class C_event extends CI_Controller
 
 		$query = $this->db->get_where('ikut_kegiatan', array('iEventId' => $iEventId, 'iUserId' => $iUserId, 'iCancel' => ''));
 		if ($query->num_rows() > 0) {
-			return "1";
+			
 		}
+
+		echo "1";
 	}
 }
 
