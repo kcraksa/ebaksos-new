@@ -1,0 +1,1 @@
+Register Berhasil. Silahkan <a href="<?= base_url() ?>index.php/">klik ini</a> untuk login
