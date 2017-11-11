@@ -1,9 +1,21 @@
+<?php 
+	// print_r($this->session->userdata());
+	// exit();
+?>
 <div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<h3>List Event</h3>
+			<hr>
+		</div>
+	</div>
+	<?php if ($this->session->userdata('iTypeUser') != 'Volunteer') { ?>
 	<div class="row">
 		<div class="col-md-12">
 			<a href="<?= site_url() ?>/c_event/formAddEvent" class="btn btn-primary" style="margin-bottom: 10px;"><span class="glyphicon glyphicon-plus"></span> Add Event</a>
 		</div>
 	</div>
+	<?php } ?>
 	<div class="row">
 		<div class="col-md-12">
 			<table id="table_event_list_penyelenggara" class="table table-striped table-bordered">
@@ -76,7 +88,8 @@
 	}
 
 	function btn_follow_event(id) {
-		var tanya = confirm('Anda Yakin ?');
+		var x = cek_sudah_ikut_belum(id);
+		var tanya = confirm('Anda Yakin Ingin Mengikuti Kegiatan Ini ?');
 		if (tanya == true) {
 			$.ajax({
 				url: '<?= site_url('c_event/ikutiKegiatan/') ?>',
@@ -89,5 +102,18 @@
 				}
 			})
 		}
+	}
+
+	function cek_sudah_ikut_belum(id) {
+		var user  = '<?php echo $this->session->userdata('id') ?>';
+		return $.ajax({
+			url: '<?php echo $site_url() ?>c_event/cek_sudah_ikut_event',
+			type: 'POST',
+			data: {
+				'iEventId' : id,
+				'iUserId'  : user
+			},
+			async: false
+		}).responseText
 	}
 </script>

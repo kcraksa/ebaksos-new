@@ -109,15 +109,20 @@ class C_event extends CI_Controller
 		foreach($query->result() as $r) {
 			// '
 
-		$btnView = "<a href='#' class='btn btn-primary btn-xs' data-toggle='modal' data-target='#myModal' onclick='showDetailEvent({$r->id})'><span class='glyphicon glyphicon-align-left' title='Detail'></span></a>";
-		$btnEdit = "<a href='".site_url()."/c_event/formEditEvent/".$r->id."' class='btn btn-success btn-xs'><span class='glyphicon glyphicon-pencil' title='Edit'></span></a>";
-		$btnDelete = "<a href='".site_url()."/c_event/delete/".$r->id."' class='btn btn-danger btn-xs' onclick='return confirm(\"Yakin akan menghapus data ini ?\")'><span class='glyphicon glyphicon-trash' title='Delete'></span></a>";
-		$btnFollow = "<a href='#' class='btn btn-success btn-xs' onclick='btn_follow_event(".$r->id.")'><span class='glyphicon glyphicon-plus' title='Ikuti Kegiatan'></span></a>";
+		$btnView = "<a href='#' class='btn btn-primary btn-xs btn_view_event' data-toggle='modal' data-target='#myModal' onclick='showDetailEvent({$r->id})'><span class='glyphicon glyphicon-align-left' title='Detail'></span></a>";
+
+		$btnEdit = "<a href='".site_url()."/c_event/formEditEvent/".$r->id."' class='btn btn-success btn-xs btn_edit_event'><span class='glyphicon glyphicon-pencil' title='Edit'></span></a>";
+
+		$btnDelete = "<a href='".site_url()."/c_event/delete/".$r->id."' class='btn btn-danger btn-xs btn_delete_event' onclick='return confirm(\"Yakin akan menghapus data ini ?\")'><span class='glyphicon glyphicon-trash' title='Delete'></span></a>";
+
+		$btnFollow = "<a href='#' class='btn btn-success btn-xs btn_follow_event' onclick='btn_follow_event(".$r->id.")'><span class='glyphicon glyphicon-plus' title='Ikuti Kegiatan'></span></a>";
+
+		$btnBatal = "<a href='#' class='btn btn-danger btn-xs btn_batal_event' onclick='btn_batal_event(".$r->id.")'><span class='glyphicon glyphicon-remove-circle' title='Batal Ikuti Kegiatan'></span></a>";
 		
 		if ($this->session->userdata('iTypeUser') == 'Penyelenggara') {
 			$button = $btnView." ".$btnEdit." ".$btnDelete;
 		} else {
-			$button = $btnView." ".$btnFollow;
+			$button = $btnView." ".$btnFollow." ".$btnBatal;
 		}
 		
 		$data[] = array(
@@ -262,6 +267,17 @@ class C_event extends CI_Controller
 
 		$this->load->view('headerLogin');
 		$this->load->view('v_pembayaran', $datanya);
+	}
+
+	function cek_sudah_ikut_event() {
+
+		$iEventId = $this->input->post('iEventId');
+		$iUserId  = $this->input->post('iUserId');
+
+		$query = $this->db->get_where('ikut_kegiatan', array('iEventId' => $iEventId, 'iUserId' => $iUserId, 'iCancel' => ''));
+		if ($query->num_rows() > 0) {
+			return "1";
+		}
 	}
 }
 

@@ -5,7 +5,7 @@
 	<title>e-Baksos - Selalu Ada Cara Untuk Menolong Sesama</title>
 	<!-- CSS -->
 	<link rel="stylesheet" href="<?php echo base_url() ?>assets/css/bootstrap.min.css">
-	<!-- <link rel="stylesheet" href="<?php echo base_url() ?>assets/css/style.css"> -->
+	<link rel="stylesheet" href="<?php echo base_url() ?>assets/css/style.css">
 	<link rel="stylesheet" href="<?= base_url() ?>assets/css/font-awesome.min.css">
 	<link rel="stylesheet" href="<?= base_url() ?>assets/css/bootstrap-datepicker.min.css">
 	<link rel="stylesheet" href="<?= base_url() ?>assets/css/datatables.min.css">

@@ -10,98 +10,18 @@ body {
 /* Styling Header */
 #header .navbar-inverse {
 	border-radius: 0;
-	background-color: #FFF;
-	color: #000;
+	background-color: #1470FF;
+	color: #fff;
 	border: 0;
 	border-bottom: 1px solid green;
 }
 
-#header .jumbotron {
-	margin-top: -20px;
-	padding: 0;
-	background-image: url('../img/header.jpg');
-	background-size: cover;
-	background-position: 100% 40%;
-	width: 100%;
-	height: 470px;
-	text-align: center;
-	padding: 230px;
-}
-
-#header .container {
-	/* background: #cdcdcd; */
-	background: rgba(205, 205, 205, 0.6);
-	padding: 20px;
-	border-radius: 15px;
-	color: #000;
-}
-
-/* Body */
-#body .judul-bagian {
-	text-align: center;
-}
-
-#body #content-about-us {
-	column-count: 2;
-	column-gap: 50px;
-	text-align: justify;
-	margin-top: 50px;
-}
-
-.garis {
-	border: 0;
-	height: 1px;
-	width: 90%;
-	background-image: linear-gradient(to right, rgba(0,0,0,0), rgba(0,0,0,0.75), rgba(0,0,0,0));
-}
-
-#body #content-event img {
-	width: 200px;
-	height: 200px;
-}
-
-#body #content-event.panel-body {
-	padding: 0;
-}
-
-#body #content-event table.tbl-event tr td {
-	text-align: left;
-}
-
-#body #content-event {
-	margin-top: 50px;
-}
-
-#modalLogin .modal-dialog {
-	width: 300px;
-}
-
-/* Register */
-
-.separator-form-register {
-	border: 0;
-	background: none;
-	border-bottom: 1px solid black;
-	border-radius: 0;
-	box-shadow: none;
-	font-weight: bold;
-	border-left: 3px solid red;
-	font-style: italic;
-	text-decoration: underline;
-}
-
-/* Footer */
-#footer {
-	width: 100%;
-	height: 70px;
-	background-color: #2F4F4F;
-	margin-top: 40px;
-	overflow: auto;
-}
-
-#footer .copyright {
-	text-align: center;
+#header .navbar-inverse a {
 	color: #fff;
-	margin-top: 25px;
+}
+
+#header .navbar-inverse a:hover,
+#header .navbar-inverse a:focus {
+	background-color: #1727FF;
 }
 
