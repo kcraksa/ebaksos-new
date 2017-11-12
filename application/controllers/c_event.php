@@ -41,6 +41,40 @@ class C_event extends CI_Controller
 		$this->load->view('v_edit_event', $data);
 	}
 
+	function showEventDiikuti() {
+		$this->load->view('headerLogin');
+		$this->load->view('v_event_diikuti');
+	}
+
+	function formKonfirmasiPembayaran($id) {
+
+		$data = array();
+
+		$query = $this->m_crud->selectWhere('event', array('id', 'vNamaEvent'), array('id' => $id));
+		foreach ($query->result_array() as $row) {
+			$data = $row;
+		}
+
+		$datanya['data'] = $data;
+
+		$this->load->view('headerLogin');
+		$this->load->view('v_konfirmasi_pembayaran', $datanya);
+	}
+
+	function prosesKonfirmasiPembayaranByUser() {
+
+		$insert = array(
+					'id'             => '',
+					'iEventId'       => $this->input->post('id_event'),
+					'iUserId'        => $this->session->userdata('id'),
+					'vRekeningBayar' => $this->input->post('rekening_pengirim'),
+					'vAtasNama'      => $this->input->post('nama_pemilik'),
+					'iNominal'       => $this->input->post('nominal_transfer')
+				);
+		$query = $this->m_crud->insert('konfirmasi_pembayaran', $insert);
+		if ($query) redirect('/c_event/showEventDiikuti');
+	}
+
 	function save() {
 
 		$data = array(
@@ -125,7 +159,7 @@ class C_event extends CI_Controller
 
 		$btnDelete = "<a href='".site_url()."/c_event/delete/".$r->id."' class='btn btn-danger btn-xs btn_delete_event' onclick='return confirm(\"Yakin akan menghapus data ini ?\")'><span class='glyphicon glyphicon-trash' title='Delete'></span></a>";
 
-		$btnFollow = "<a href='#' class='btn btn-success btn-xs btn_follow_event' onclick='btn_follow_event(".$r->id.")'><span class='glyphicon glyphicon-plus' title='Ikuti Kegiatan'></span></a>";
+		$btnFollow = "<a href='".site_url()."/c_event/ikutiKegiatan/".$r->id."' class='btn btn-success btn-xs btn_follow_event' onclick='confirm(\"Anda Yakin Ingin Ikut Kegiatan Ini ?\")'><span class='glyphicon glyphicon-plus' title='Ikuti Kegiatan'></span></a>";
 
 		$btnBatal = "<a href='#' class='btn btn-danger btn-xs btn_batal_event' onclick='btn_batal_event(".$r->id.")'><span class='glyphicon glyphicon-remove-circle' title='Batal Ikuti Kegiatan'></span></a>";
 		
@@ -146,6 +180,62 @@ class C_event extends CI_Controller
 					$button
 				);
 			$no++;
+		}
+		
+		$output = array(
+					"draw"            => $draw,
+					"recordsTotal"    => $query->num_rows(),
+					"recordsFiltered" => $query->num_rows(),
+					"data"            => $data
+				);
+
+		echo json_encode($output);
+		exit();
+	}
+
+	function ikut_event() {
+
+		$draw   = intval($this->input->get("draw"));
+		$start  = intval($this->input->get("start"));
+		$length = intval($this->input->get("length"));
+		
+		
+		$query = $this->m_event->getDataEventDiikuti($this->session->userdata('id'));
+		
+		$data = array();
+		
+		// print_r($this->db->last_query()); exit();
+
+		$no = 1;
+		foreach($query->result() as $r) {
+
+			$btnView = "<a href='#' class='btn btn-primary btn-xs btn_view_event' data-toggle='modal' data-target='#myModal' onclick='showDetailEvent({$r->id})'><span class='glyphicon glyphicon-align-left' title='Detail'></span></a>";
+
+			$btnConfirm = "<a href='".site_url()."/c_event/formKonfirmasiPembayaran/".$r->id."' class='btn btn-success btn-xs btn_batal_event'><span class='glyphicon glyphicon-ok' title='Konfirmasi Pembayaran' ></span></a>";
+
+			$btnBatal = "<a href='#' class='btn btn-danger btn-xs btn_batal_event' onclick='btn_batal_event(".$r->id.")'><span class='glyphicon glyphicon-remove-circle' title='Batal Ikuti Kegiatan'></span></a>";
+
+			if ($r->iTiket == 1) {
+				if ($r->idKonfirmasiUser == NULL) {
+					$button = $btnView." ".$btnConfirm." ".$btnBatal;
+				} else {
+					$button = $btnView." ".$btnBatal;
+				}
+			} else {
+				$button = $btnView." ".$btnBatal;
+			}
+			
+			$data[] = array(
+						$no,
+						$r->vNamaEvent,
+						date('d-m-Y', strtotime($r->dEvent)),
+						date('H:i', strtotime($r->tEventFrom))." s/d  ".date('H:i', strtotime($r->tEventTo)),
+						$r->vAddress,
+						$r->vHargaTiket,
+						$r->iKuota,
+						$button
+					);
+				$no++;
 		}
 		
 		$output = array(
@@ -249,9 +339,7 @@ class C_event extends CI_Controller
 		echo $o;
 	}
 
-	function ikutiKegiatan() {
-
-		$id = $this->input->post('id');
+	function ikutiKegiatan($id) {
 
 		$insert = array(
 					'iEventId' => $id,
@@ -259,7 +347,7 @@ class C_event extends CI_Controller
 				);
 
 		$query = $this->m_crud->insert('ikut_kegiatan', $insert);
-		if ($query) return "1";
+		if ($query) redirect('/c_event/showInfoPembayaran/'.$id);
 	}
 
 	function showInfoPembayaran($id) {
@@ -275,8 +363,10 @@ class C_event extends CI_Controller
 			array_push($datanya, $row_data);
 		}
 
+		$data['data'] = $datanya;
+
 		$this->load->view('headerLogin');
-		$this->load->view('v_pembayaran', $datanya);
+		$this->load->view('v_pembayaran', $data);
 	}
 
 	function cek_sudah_ikut_event() {
@@ -286,10 +376,12 @@ class C_event extends CI_Controller
 
 		$query = $this->db->get_where('ikut_kegiatan', array('iEventId' => $iEventId, 'iUserId' => $iUserId, 'iCancel' => ''));
 		if ($query->num_rows() > 0) {
-			
+			echo "1";
 		}
+	}
 
-		echo "1";
+	function konfirmasiPembayaran() {
+
 	}
 }
 

@@ -33,7 +33,14 @@
 				<?php if ($this->session->has_userdata('iTypeUser')) { ?>
 		
 				<ul class="nav navbar-nav">
-					<li><a href="<?= site_url() ?>/c_event/">Event</a></li>
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Event
+							<span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li><a href="<?= site_url() ?>/c_event/">Event List</a></li>
+								<li><a href="<?= site_url() ?>/c_event/showEventDiikuti">Event Diikuti</a></li>
+							</ul>
+					</li>
 				</ul>			
 
 				<ul class="nav navbar-nav navbar-right">

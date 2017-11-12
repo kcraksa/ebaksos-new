@@ -25,3 +25,12 @@ body {
 	background-color: #1727FF;
 }
 
+#header .navbar-inverse .dropdown-menu li a {
+	color: #000;
+}
+
+#header .navbar-inverse .dropdown-menu li a:hover,
+#header .navbar-inverse .dropdown-menu li a:focus {
+	color: #fff;
+}
+

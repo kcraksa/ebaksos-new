@@ -5,20 +5,13 @@
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
-			<h3>List Event</h3>
+			<h3>List Event Diikuti</h3>
 			<hr>
 		</div>
 	</div>
-	<?php if ($this->session->userdata('iTypeUser') != 'Volunteer') { ?>
 	<div class="row">
 		<div class="col-md-12">
-			<a href="<?= site_url() ?>/c_event/formAddEvent" class="btn btn-primary" style="margin-bottom: 10px;"><span class="glyphicon glyphicon-plus"></span> Add Event</a>
-		</div>
-	</div>
-	<?php } ?>
-	<div class="row">
-		<div class="col-md-12">
-			<table id="table_event_list_penyelenggara" class="table table-striped table-bordered">
+			<table id="table_event_diikuti" class="table table-striped table-bordered">
 				<thead>
 					<tr>
 						<th align="center">No.</th>
@@ -62,9 +55,9 @@
 
 <script>
 	$(document).ready(function () {
-		$('#table_event_list_penyelenggara').DataTable({
+		$('#table_event_diikuti').DataTable({
 			ajax: {
-				url: '<?= site_url('c_event/getDataEvent') ?>',
+				url: '<?= site_url('c_event/ikut_event') ?>',
 				type: 'GET'
 			},
 			columnDefs: [
@@ -85,40 +78,5 @@
 				console.log(data);
 			}
 		})
-	}
-
-	function btn_follow_event(id) {
-		var cek = cek_sudah_ikut_belum(id);
-		if (cek == 1) {
-			alert('Anda Sudah Mengikuti Kegiatan Ini');
-			return false;
-		} else {
-			var tanya = confirm('Anda Yakin Ingin Mengikuti Kegiatan Ini ?');
-			if (tanya == true) {
-				$.ajax({
-					url: '<?= site_url('c_event/ikutiKegiatan/') ?>',
-					type: 'POST',
-					data: { 'id' : id },
-					success: function(data) {
-						if (data == 1) {
-							window.location = '<?= site_url() ?>c_event/showInfoPembayaran/'+id;
-						}
-					}
-				})
-			}
-		}
-	}
-
-	function cek_sudah_ikut_belum(id) {
-		var user  = '<?php echo $this->session->userdata('id') ?>';
-		return $.ajax({
-			url: '<?php echo site_url() ?>/c_event/cek_sudah_ikut_event',
-			type: 'POST',
-			data: {
-				'iEventId' : id,
-				'iUserId'  : user
-			},
-			async: false
-		}).responseText
 	}
 </script>
