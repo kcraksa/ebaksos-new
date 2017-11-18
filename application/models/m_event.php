@@ -29,5 +29,25 @@
 				WHERE b.iEventId IS NOT NULL AND b.iUserId = '{$user}' GROUP BY a.id ORDER BY a.dEvent DESC";
  		return $this->db->query($sql);
  	}
+
+ 	function getAllDataEvent() {
+
+ 		$sql = "SELECT * FROM ebaksos.event ORDER BY dEvent DESC";
+ 		return $this->db->query($sql);
+ 	}
+
+ 	function getAllUser() {
+
+ 		$sql = "SELECT a.id,a.vEmail, a.iTypeUser,
+				CASE a.iTypeUser
+				WHEN 2 THEN b.vNama 
+				WHEN 3 THEN c.vNama
+				ELSE 'Administrator' 
+				END AS vNama,
+				a.iStatus
+				FROM ebaksos.user AS a LEFT JOIN ebaksos.penyelenggara AS b ON a.id = b.iIdUser
+				LEFT JOIN ebaksos.volunteer AS c ON a.id = c.iIdUser";
+ 		return $this->db->query($sql);
+ 	}
  } 
 ?>

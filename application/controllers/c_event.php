@@ -46,6 +46,18 @@ class C_event extends CI_Controller
 		$this->load->view('v_event_diikuti');
 	}
 
+	function showManageEvent() {
+
+		$this->load->view('headerLogin');
+		$this->load->view('v_manage_event');
+	}
+
+	function showAllUser() {
+
+		$this->load->view('headerLogin');
+		$this->load->view('v_manage_user');
+	}
+
 	function formKonfirmasiPembayaran($id) {
 
 		$data = array();
@@ -381,7 +393,206 @@ class C_event extends CI_Controller
 	}
 
 	function konfirmasiPembayaran() {
+	}
 
+	function getDataEventAll() {
+
+		$draw   = intval($this->input->get("draw"));
+		$start  = intval($this->input->get("start"));
+		$length = intval($this->input->get("length"));
+
+		$query = $this->m_event->getAllDataEvent();
+		
+		$data = array();
+		
+		// print_r($this->db->last_query()); exit();
+
+		$no = 1;
+		foreach($query->result() as $r) {
+
+			// '
+
+		$btnView = "<a href='#' class='btn btn-primary btn-xs btn_view_event' data-toggle='modal' data-target='#myModal' onclick='showDetailEvent({$r->id})'><span class='glyphicon glyphicon-align-left' title='Detail'></span></a>";
+
+		$btnVerified = "<a href='".site_url()."/c_event/verifikasiEvent/".$r->id."' class='btn btn-success btn-xs btn_edit_event' onclick='return confirm(\"Anda Yakin ?\")'><span class='glyphicon glyphicon-ok' title='Verifikasi'></span></a>";
+
+		$btnNotVerified = "<a href='".site_url()."/c_event/tolakEvent/".$r->id."' class='btn btn-danger btn-xs btn_delete_event' onclick='return confirm(\"Anda Yakin ?\")'><span class='glyphicon glyphicon-remove' title='Tolak'></span></a>";
+
+		if ($r->iVerified == 0) {
+			$button = $btnView." ".$btnVerified." ".$btnNotVerified;
+		} else {
+			$button = $btnView;
+		}
+
+		
+		$data[] = array(
+					$no,
+					$r->vNamaEvent,
+					date('d-m-Y', strtotime($r->dEvent)),
+					date('H:i', strtotime($r->tEventFrom))." s/d  ".date('H:i', strtotime($r->tEventTo)),
+					$r->vAddress,
+					$r->vHargaTiket,
+					$r->iKuota,
+					$button,
+					$this->getStatusVerified($r->iVerified)
+				);
+			$no++;
+		}
+		
+		$output = array(
+					"draw"            => $draw,
+					"recordsTotal"    => $query->num_rows(),
+					"recordsFiltered" => $query->num_rows(),
+					"data"            => $data
+				);
+
+		echo json_encode($output);
+		exit();
+	}
+
+	function getStatusVerified($status) {
+		if ($status == 0) {
+			$label = "<span class='label label-warning'>Belum Terverifikasi</span>";
+		}
+
+		if ($status == 1) {
+			$label = "<span class='label label-success'>Terverifikasi</span>";
+		}
+
+		if ($status == 2) {
+			$label = "<span class='label label-danger'>Ditolak</span>";
+		}
+
+		return $label;
+	}
+
+	function verifikasiEvent($id) {
+
+		$set = array(
+				'iVerified' => 1
+			);
+		$query = $this->m_crud->update('event', $set, array('id' => $id));
+		if ($query) {
+			redirect('/c_event/showManageEvent');
+		} else {
+			echo "<script>alert('Oops, Terjadi Kesalahan'); return false;</script>";
+		}
+	}
+
+	function tolakEvent($id) {
+
+		$set   = array('iVerified' => 2);
+		$where = array('id' => $id);
+
+		$query = $this->m_crud->update('event', $set, $where);
+		if ($query) {
+			redirect('/c_event/showManageEvent');
+		} else {
+			echo "<script>alert('Oops, Terjadi Kesalahan'); return false;</script>";
+		}
+	}
+
+	function getDataAllUser() {
+
+		$draw   = intval($this->input->get("draw"));
+		$start  = intval($this->input->get("start"));
+		$length = intval($this->input->get("length"));
+		
+		
+		$query = $this->m_event->getAllUser();
+		
+		$data = array();
+		
+		// print_r($this->db->last_query()); exit();
+
+		$no = 1;
+		foreach($query->result() as $r) {
+
+			$btnSuspend = "<a href='".site_url('c_event/suspendUser/'.$r->id)."' class='btn btn-warning btn-xs' onclick='confirm(\"Anda Yakin ?\")'>Suspend</a>";
+			$btnBanned  = "<a href='".site_url('c_event/bannedUser/'.$r->id)."' class='btn btn-danger btn-xs' onclick='confirm(\"Anda Yakin ?\")'>Banned</a>";
+			$btnActive  = "<a href='".site_url('c_event/activatingUser/'.$r->id)."' class='btn btn-success btn-xs' onclick='confirm(\"Anda Yakin ?\")'>Active</a>";
+
+			if ($r->iStatus == 0) {
+				$button = $btnSuspend." ".$btnBanned;
+			} else {
+				$button = $btnActive;
+			}
+			
+			$data[] = array(
+						$no,
+						$r->vNama,
+						$r->vEmail,
+						$this->getRoleUser($r->iTypeUser),
+						$button
+					);
+				$no++;
+		}
+		
+		$output = array(
+					"draw"            => $draw,
+					"recordsTotal"    => $query->num_rows(),
+					"recordsFiltered" => $query->num_rows(),
+					"data"            => $data
+				);
+
+		echo json_encode($output);
+		exit();
+	}
+
+	function getRoleUser($iTypeUser) {
+
+		if ($iTypeUser == 1) {
+			$role = "Administrator";
+		}
+
+		if ($iTypeUser == 2) {
+			$role = "Penyelenggara";
+		}
+
+		if ($iTypeUser == 3) {
+			$role = "Volunteer";
+		}
+
+		return $role;
+	}
+
+	function suspendUser($idUser) {
+
+		$set  = array('iStatus' => 2);
+		$where = array('id' => $idUser);
+
+		$query = $this->m_crud->update('user', $set, $where);
+		if ($query) {
+			redirect('/c_event/showAllUser');
+		} else {
+			echo "<script>alert('Oops, Terjadi Kesalahan'); return false;</script>";
+		}
+	}
+
+	function bannedUser($idUser) {
+
+		$set  = array('iStatus' => 3);
+		$where = array('id' => $idUser);
+
+		$query = $this->m_crud->update('user', $set, $where);
+		if ($query) {
+			redirect('/c_event/showAllUser');
+		} else {
+			echo "<script>alert('Oops, Terjadi Kesalahan'); return false;</script>";
+		}
+	}
+
+	function activatingUser($idUser) {
+
+		$set  = array('iStatus' => 0);
+		$where = array('id' => $idUser);
+
+		$query = $this->m_crud->update('user', $set, $where);
+		if ($query) {
+			redirect('/c_event/showAllUser');
+		} else {
+			echo "<script>alert('Oops, Terjadi Kesalahan'); return false;</script>";
+		}
 	}
 }
 

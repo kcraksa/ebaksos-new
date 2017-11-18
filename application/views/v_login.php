@@ -28,3 +28,8 @@
 		</div>
 	</div>
 </div>
+<script>
+	$(document).ready(function () {
+		$('#email_user').focus();
+	})
+</script>

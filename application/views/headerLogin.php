@@ -32,6 +32,7 @@
 
 				<?php if ($this->session->has_userdata('iTypeUser')) { ?>
 		
+				<?php if ($this->session->userdata('iTypeUser') != 1) { ?>
 				<ul class="nav navbar-nav">
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Event
@@ -46,6 +47,16 @@
 				<ul class="nav navbar-nav navbar-right">
 					<li><a href="<?= base_url() ?>index.php/welcome/logOutProcess"><i class="fa fa-sign-in"></i> Logout</a></li>
 				</ul>
+				<?php } else { ?>
+				<ul class="nav navbar-nav">
+					<li><a href="<?= base_url() ?>index.php/c_event/showManageEvent">Manage Event</a></li>
+					<li><a href="<?= base_url() ?>index.php/c_event/showAllUser">Manage User</a></li>
+				</ul>			
+
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="<?= base_url() ?>index.php/welcome/logOutProcess"><i class="fa fa-sign-in"></i> Logout</a></li>
+				</ul>
+				<?php } ?>
 
 				<?php } else { ?>
 

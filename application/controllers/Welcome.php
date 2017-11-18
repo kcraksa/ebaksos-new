@@ -129,6 +129,19 @@ class Welcome extends CI_Controller {
 				$db = 'volunteer';
 			}
 
+			if ($row->iTypeUser == 1) {
+				$dataUser = array(
+								'vEmail'     => $username,
+								'iTypeUser'  => 1,
+								'tLastLogin' => date('d-m-Y H:i:s', strtotime($row->tLastLogin)),
+								'vNama'      => 'Administrator'
+							);
+				$this->session->set_userdata($dataUser);
+
+				redirect('/welcome/showBeranda/');
+				break;
+			}
+
 			$select      = 'vNama';
 			$where       = array('iIdUser' => $id);
 			$getDataUser = $this->m_crud->selectWhere($db, $select, $where);
@@ -166,5 +179,10 @@ class Welcome extends CI_Controller {
 		$dataUser = array('vEmail','iTypeUser','tLastLogin','vNama');
 		$this->session->unset_userdata($dataUser);
 		redirect('/welcome/index/');
+	}
+
+	function getMd5Keys($str) {
+
+		echo sha1($str);
 	}
 }
